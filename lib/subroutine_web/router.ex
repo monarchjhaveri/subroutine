@@ -6,6 +6,10 @@ defmodule SubroutineWeb.Router do
   end
 
   scope "/", SubroutineWeb do
+    get "/", DungeonController, :indexhtml
+  end
+
+  scope "/api", SubroutineWeb do
     pipe_through :api
 
     get "/", DungeonController, :index
