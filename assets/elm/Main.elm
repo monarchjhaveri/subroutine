@@ -3,6 +3,19 @@ module Main exposing (..)
 import Html exposing (..)
 
 
+-- MSG
+
+
+type Msg
+    = NoOp
+
+
+
+-- MODEL
+-- UPDATE
+-- VIEW
+
+
 main : Program Never Model Msg
 main =
     Html.program
