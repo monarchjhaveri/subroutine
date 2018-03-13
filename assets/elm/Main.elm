@@ -1,6 +1,13 @@
 module Main exposing (..)
+
 import Html exposing (..)
 
-main : Html a
+
+main : Program Never Model Msg
 main =
-  text "Hello World"
+    Html.program
+        { view = view
+        , update = update
+        , init = init
+        , subscriptions = subscriptions
+        }
