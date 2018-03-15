@@ -6,7 +6,7 @@ defmodule SubroutineWeb.Router do
   end
 
   scope "/", SubroutineWeb do
-    get "/", DungeonController, :indexhtml
+    get "/", DungeonController, :index
   end
 
   scope "/api", SubroutineWeb do
