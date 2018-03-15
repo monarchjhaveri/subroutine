@@ -51,6 +51,11 @@ subscriptions model =
 -- INIT
 
 
+init : ( Model, Cmd Msg )
+init =
+    ( {}, Cmd.none )
+
+
 main : Program Never Model Msg
 main =
     Html.program
