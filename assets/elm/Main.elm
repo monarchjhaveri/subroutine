@@ -38,6 +38,19 @@ view model =
     text "Hello World"
 
 
+
+-- SUBSCRIPTIONS
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none
+
+
+
+-- INIT
+
+
 main : Program Never Model Msg
 main =
     Html.program
