@@ -33,6 +33,11 @@ update msg model =
 -- VIEW
 
 
+view : Model -> Html Msg
+view model =
+    text "Hello World"
+
+
 main : Program Never Model Msg
 main =
     Html.program
