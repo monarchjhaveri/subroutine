@@ -1,8 +1,6 @@
 defmodule LevelMap do
-  @room_size 2
-
-  def gen do
-    gencol @room_size
+  def gen(size \\ 2) do
+    gencol size
   end
 
   defp floor_cell(x, y), do: %Cell{ type: "FLOOR", x: x, y: y }
