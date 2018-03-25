@@ -1,5 +1,5 @@
 defmodule LevelMap do
-  @room_size 20
+  @room_size 5
   def default_size, do: @room_size
 
   def gen(size \\ @room_size) do
@@ -10,7 +10,7 @@ defmodule LevelMap do
   defp wall_cell(x, y), do: %Cell{ type: "WALL", x: x, y: y }
 
   defp new_cell(%{x: x, y: y, max: max}) do
-    if x >= max || y >= max, do: wall_cell(x, y), else: floor_cell(x, y)
+    if (x <= 0 || x >= max) || (y <= 0 || y >= max), do: wall_cell(x, y), else: floor_cell(x, y)
   end
 
   defp genrow(list, %{x: x, max: max}) when x > max do
