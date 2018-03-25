@@ -8,6 +8,6 @@ defmodule SubroutineWeb.DungeonController do
   end
 
   def index(conn, _params) do
-    json conn, LevelMap.gen
+    json conn, %{room: LevelMap.gen, player: %{x: 1, y: 1}}
   end
 end

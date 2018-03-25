@@ -1,5 +1,7 @@
 defmodule LevelMap do
-  def gen(size \\ 2) do
+  @room_size 2
+
+  def gen(size \\ @room_size) do
     gencol size
   end
 
