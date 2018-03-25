@@ -15,7 +15,28 @@ type Msg
 
 
 type alias Model =
-    {}
+    { room : List Cell
+    , player : Player
+    }
+
+
+type alias X =
+    Int
+
+
+type alias Y =
+    Int
+
+
+type Cell
+    = Floor X Y
+    | Wall X Y
+
+
+type alias Player =
+    { x : Int
+    , y : Int
+    }
 
 
 
@@ -53,7 +74,7 @@ subscriptions model =
 
 init : ( Model, Cmd Msg )
 init =
-    ( {}, Cmd.none )
+    ( (Model [] (Player 0 0)), Cmd.none )
 
 
 main : Program Never Model Msg
