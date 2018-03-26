@@ -8,7 +8,7 @@ defmodule SubroutineWeb.DungeonController do
   end
 
   def index(conn, _params) do
-    json conn, build_response(2)
+    json conn, build_response(20)
   end
 
   defp build_response(room_size) do
