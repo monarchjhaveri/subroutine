@@ -4,6 +4,7 @@ import Html exposing (..)
 import Http
 import Json.Decode exposing (..)
 import Json.Decode.Pipeline exposing (decode, required)
+import List.Extra
 
 
 -- MSG
@@ -117,10 +118,22 @@ view : Model -> Html Msg
 view model =
     case model.err of
         None ->
-            div [] (List.intersperse (br [] []) (List.map viewCell model.data.room))
+            div [] (intersperseEvery (List.map viewCell model.data.room) model.data.roomSize (br [] []))
 
         FetchFail ->
             text "failed to fetch from server"
+
+
+intersperseEvery : List a -> Int -> a -> List a
+intersperseEvery list count elem =
+    let
+        broken =
+            List.Extra.greedyGroupsOf count list
+
+        interspersed =
+            List.intersperse [ elem ] broken
+    in
+        List.concat interspersed
 
 
 viewCell : Cell -> Html Msg
