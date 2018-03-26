@@ -69,7 +69,7 @@ update msg model =
             ( model, getServerState )
 
         NewState (Ok data) ->
-            ( { model | data = data }, Cmd.none )
+            ( { model | data = { data | roomSize = data.roomSize + 1 } }, Cmd.none )
 
         NewState (Err _) ->
             ( { model | err = FetchFail }, Cmd.none )
@@ -91,7 +91,7 @@ decodeServerState : Decoder GameData
 decodeServerState =
     decode GameData
         |> required "room" (list cellDecoder)
-        |> required "roomSize" int
+        |> required "size" int
         |> required "player" playerDecoder
 
 
@@ -118,7 +118,7 @@ view : Model -> Html Msg
 view model =
     case model.err of
         None ->
-            div [] (intersperseEvery (List.map viewCell model.data.room) model.data.roomSize (br [] []))
+            code [] (intersperseEvery (List.map viewCell model.data.room) model.data.roomSize (br [] []))
 
         FetchFail ->
             text "failed to fetch from server"
