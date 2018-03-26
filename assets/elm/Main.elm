@@ -3,6 +3,7 @@ module Main exposing (..)
 import Html exposing (..)
 import Http
 import Json.Decode exposing (..)
+import Json.Decode.Pipeline exposing (decode, required)
 
 
 -- MSG
@@ -10,7 +11,7 @@ import Json.Decode exposing (..)
 
 type Msg
     = GetState
-    | NewState (Result Http.Error String)
+    | NewState (Result Http.Error Model)
 
 
 
@@ -31,9 +32,11 @@ type alias Y =
     Int
 
 
-type Cell
-    = Floor X Y
-    | Wall X Y
+type alias Cell =
+    { x : X
+    , y : Y
+    , cellType : String
+    }
 
 
 type alias Player =
@@ -71,9 +74,26 @@ getServerState =
         Http.send NewState request
 
 
-decodeServerState : Decoder String
+decodeServerState : Decoder Model
 decodeServerState =
-    at [] string
+    decode Model
+        |> required "room" (list cellDecoder)
+        |> required "player" playerDecoder
+
+
+cellDecoder : Decoder Cell
+cellDecoder =
+    decode Cell
+        |> required "x" int
+        |> required "y" int
+        |> required "type" string
+
+
+playerDecoder : Decoder Player
+playerDecoder =
+    decode Player
+        |> required "x" int
+        |> required "y" int
 
 
 
