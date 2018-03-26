@@ -1,13 +1,16 @@
 module Main exposing (..)
 
 import Html exposing (..)
+import Http
+import Json.Decode exposing (..)
 
 
 -- MSG
 
 
 type Msg
-    = NoOp
+    = GetState
+    | NewState (Result Http.Error String)
 
 
 
@@ -46,8 +49,31 @@ type alias Player =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        NoOp ->
+        GetState ->
+            ( model, getServerState )
+
+        NewState (Ok data) ->
             ( model, Cmd.none )
+
+        NewState (Err _) ->
+            ( model, Cmd.none )
+
+
+getServerState : Cmd Msg
+getServerState =
+    let
+        url =
+            "/api"
+
+        request =
+            Http.get url decodeServerState
+    in
+        Http.send NewState request
+
+
+decodeServerState : Decoder String
+decodeServerState =
+    at [] string
 
 
 
