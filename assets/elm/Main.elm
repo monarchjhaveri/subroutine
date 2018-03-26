@@ -26,6 +26,7 @@ type alias Model =
 
 type alias GameData =
     { room : List Cell
+    , roomSize : Int
     , player : Player
     }
 
@@ -89,6 +90,7 @@ decodeServerState : Decoder GameData
 decodeServerState =
     decode GameData
         |> required "room" (list cellDecoder)
+        |> required "roomSize" int
         |> required "player" playerDecoder
 
 
@@ -149,7 +151,7 @@ subscriptions model =
 
 init : ( Model, Cmd Msg )
 init =
-    ( (Model (GameData [] (Player 0 0)) None), getServerState )
+    ( (Model (GameData [] 0 (Player 0 0)) None), getServerState )
 
 
 main : Program Never Model Msg
