@@ -11,7 +11,7 @@ import Json.Decode.Pipeline exposing (decode, required)
 
 type Msg
     = GetState
-    | NewState (Result Http.Error Model)
+    | NewState (Result Http.Error GameData)
 
 
 
@@ -19,6 +19,11 @@ type Msg
 
 
 type alias Model =
+    { data : GameData
+    }
+
+
+type alias GameData =
     { room : List Cell
     , player : Player
     }
@@ -56,7 +61,7 @@ update msg model =
             ( model, getServerState )
 
         NewState (Ok data) ->
-            ( model, Cmd.none )
+            ( { model | data = data }, Cmd.none )
 
         NewState (Err _) ->
             ( model, Cmd.none )
@@ -74,9 +79,9 @@ getServerState =
         Http.send NewState request
 
 
-decodeServerState : Decoder Model
+decodeServerState : Decoder GameData
 decodeServerState =
-    decode Model
+    decode GameData
         |> required "room" (list cellDecoder)
         |> required "player" playerDecoder
 
@@ -102,7 +107,20 @@ playerDecoder =
 
 view : Model -> Html Msg
 view model =
-    text "Hello World"
+    div [] (List.map viewCell model.data.room)
+
+
+viewCell : Cell -> Html Msg
+viewCell cell =
+    case cell.cellType of
+        "floor" ->
+            text "."
+
+        "wall" ->
+            text "#"
+
+        _ ->
+            text "!"
 
 
 
@@ -120,7 +138,7 @@ subscriptions model =
 
 init : ( Model, Cmd Msg )
 init =
-    ( (Model [] (Player 0 0)), Cmd.none )
+    ( (Model (GameData [] (Player 0 0))), getServerState )
 
 
 main : Program Never Model Msg
