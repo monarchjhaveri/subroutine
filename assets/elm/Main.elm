@@ -118,7 +118,14 @@ view : Model -> Html Msg
 view model =
     case model.err of
         None ->
-            code [] (intersperseEvery (List.map viewCell model.data.room) model.data.roomSize (br [] []))
+            let
+                room =
+                    List.map viewCell model.data.room
+
+                roomWithPlayer =
+                    insertPlayer room model.data.player
+            in
+                code [] (intersperseEvery roomWithPlayer model.data.roomSize (br [] []))
 
         FetchFail ->
             text "failed to fetch from server"
@@ -147,6 +154,11 @@ viewCell cell =
 
         _ ->
             text "!"
+
+
+insertPlayer : List (Html Msg) -> Player -> List (Html Msg)
+insertPlayer room player =
+    room
 
 
 
