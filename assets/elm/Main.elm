@@ -20,6 +20,7 @@ type Msg
 
 type alias Model =
     { data : GameData
+    , err : Error
     }
 
 
@@ -50,6 +51,11 @@ type alias Player =
     }
 
 
+type Error
+    = None
+    | FetchFail
+
+
 
 -- UPDATE
 
@@ -64,7 +70,7 @@ update msg model =
             ( { model | data = data }, Cmd.none )
 
         NewState (Err _) ->
-            ( model, Cmd.none )
+            ( { model | err = FetchFail }, Cmd.none )
 
 
 getServerState : Cmd Msg
@@ -107,16 +113,21 @@ playerDecoder =
 
 view : Model -> Html Msg
 view model =
-    div [] (List.map viewCell model.data.room)
+    case model.err of
+        None ->
+            div [] (List.map viewCell model.data.room)
+
+        FetchFail ->
+            text "failed to fetch from server"
 
 
 viewCell : Cell -> Html Msg
 viewCell cell =
     case cell.cellType of
-        "floor" ->
+        "FLOOR" ->
             text "."
 
-        "wall" ->
+        "WALL" ->
             text "#"
 
         _ ->
@@ -138,7 +149,7 @@ subscriptions model =
 
 init : ( Model, Cmd Msg )
 init =
-    ( (Model (GameData [] (Player 0 0))), getServerState )
+    ( (Model (GameData [] (Player 0 0)) None), getServerState )
 
 
 main : Program Never Model Msg
