@@ -12,6 +12,6 @@ defmodule SubroutineWeb.DungeonController do
   end
 
   defp build_response(room_size) do
-    %{room: LevelMap.gen(room_size), player: %{x: 1, y: 1}, size: room_size}
+    %{room: LevelMap.gen(room_size), size: room_size, player: %{x: 1, y: 1}}
   end
 end
