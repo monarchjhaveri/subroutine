@@ -117,7 +117,7 @@ view : Model -> Html Msg
 view model =
     case model.err of
         None ->
-            div [] (List.map viewCell model.data.room)
+            div [] (List.intersperse (br [] []) (List.map viewCell model.data.room))
 
         FetchFail ->
             text "failed to fetch from server"
