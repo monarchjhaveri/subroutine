@@ -25,13 +25,13 @@ defmodule SubroutineWeb.ChannelCase do
     end
   end
 
-
   setup tags do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(Subroutine.Repo)
+
     unless tags[:async] do
       Ecto.Adapters.SQL.Sandbox.mode(Subroutine.Repo, {:shared, self()})
     end
+
     :ok
   end
-
 end
