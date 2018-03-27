@@ -28,8 +28,9 @@ defmodule SubroutineWeb do
 
   def view do
     quote do
-      use Phoenix.View, root: "lib/subroutine_web/templates",
-                        namespace: SubroutineWeb
+      use Phoenix.View,
+        root: "lib/subroutine_web/templates",
+        namespace: SubroutineWeb
 
       # Import convenience functions from controllers
       import Phoenix.Controller, only: [get_flash: 2, view_module: 1]

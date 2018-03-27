@@ -11,7 +11,7 @@ defmodule Subroutine.Application do
       # Start the Ecto repository
       supervisor(Subroutine.Repo, []),
       # Start the endpoint when the application starts
-      supervisor(SubroutineWeb.Endpoint, []),
+      supervisor(SubroutineWeb.Endpoint, [])
       # Start your own worker by calling: Subroutine.Worker.start_link(arg1, arg2, arg3)
       # worker(Subroutine.Worker, [arg1, arg2, arg3]),
     ]
