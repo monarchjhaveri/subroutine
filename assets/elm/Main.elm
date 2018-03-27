@@ -119,20 +119,19 @@ view model =
     case model.err of
         None ->
             let
-                room =
-                    List.map viewCell model.data.room
-
                 roomWithPlayer =
-                    insertPlayer room model.data.player
+                    List.map viewCell model.data.room
+                        |> insertPlayer model.data.player
+                        |> intersperseEvery model.data.roomSize (br [] [])
             in
-                code [] (intersperseEvery roomWithPlayer model.data.roomSize (br [] []))
+                code [] roomWithPlayer
 
         FetchFail ->
             text "failed to fetch from server"
 
 
-intersperseEvery : List a -> Int -> a -> List a
-intersperseEvery list count elem =
+intersperseEvery : Int -> a -> List a -> List a
+intersperseEvery count elem list =
     let
         broken =
             List.Extra.greedyGroupsOf count list
@@ -156,8 +155,8 @@ viewCell cell =
             text "!"
 
 
-insertPlayer : List (Html Msg) -> Player -> List (Html Msg)
-insertPlayer room player =
+insertPlayer : Player -> List (Html Msg) -> List (Html Msg)
+insertPlayer player room =
     room
 
 
