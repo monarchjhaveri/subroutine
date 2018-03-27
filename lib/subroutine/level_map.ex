@@ -3,18 +3,18 @@ defmodule LevelMap do
   def default_size, do: @room_size
 
   def gen(size \\ @room_size) do
-    gencol size
+    gencol(size)
   end
 
-  defp floor_cell(x, y), do: %Cell{ type: "FLOOR", x: x, y: y }
-  defp wall_cell(x, y), do: %Cell{ type: "WALL", x: x, y: y }
+  defp floor_cell(x, y), do: %Cell{type: "FLOOR", x: x, y: y}
+  defp wall_cell(x, y), do: %Cell{type: "WALL", x: x, y: y}
 
   defp new_cell(%{x: x, y: y, max: max}) do
-    if (x <= 0 || x >= max) || (y <= 0 || y >= max), do: wall_cell(x, y), else: floor_cell(x, y)
+    if x <= 0 || x >= max || (y <= 0 || y >= max), do: wall_cell(x, y), else: floor_cell(x, y)
   end
 
   defp genrow(list, %{x: x, max: max}) when x > max do
-    list |> Enum.reverse
+    list |> Enum.reverse()
   end
 
   defp genrow(list, opts) do
@@ -24,7 +24,7 @@ defmodule LevelMap do
 
   defp gencol(max) do
     0..max
-    |> Enum.map(fn(y) -> genrow([], %{y: y, x: 0, max: max}) end)
-    |> List.flatten
+    |> Enum.map(fn y -> genrow([], %{y: y, x: 0, max: max}) end)
+    |> List.flatten()
   end
 end
