@@ -1,8 +1,8 @@
 defmodule SubroutineWeb.DungeonController do
   use SubroutineWeb, :controller
 
-  def index(conn, _params)  do
-    if conn.request_path == "api" do
+  def index(conn, _params) do
+    if conn.request_path == "/api" do
       json(conn, build_response(20))
     else
       conn
