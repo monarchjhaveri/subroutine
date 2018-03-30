@@ -69,7 +69,15 @@ update msg model =
             ( model, getServerState )
 
         NewState (Ok data) ->
-            ( { model | data = { data | roomSize = data.roomSize + 1 } }, Cmd.none )
+            ( { model
+                | data =
+                    { data
+                        | roomSize = data.roomSize + 1
+                        , room = List.map (insertPlayer data.player) data.room
+                    }
+              }
+            , Cmd.none
+            )
 
         NewState (Err _) ->
             ( { model | err = FetchFail }, Cmd.none )
@@ -121,7 +129,6 @@ view model =
             let
                 roomWithPlayer =
                     List.map viewCell model.data.room
-                        |> insertPlayer model.data.player
                         |> intersperseEvery model.data.roomSize (br [] [])
             in
                 code [] roomWithPlayer
@@ -151,13 +158,19 @@ viewCell cell =
         "WALL" ->
             text "#"
 
+        "PLAYER" ->
+            text "@"
+
         _ ->
             text "!"
 
 
-insertPlayer : Player -> List (Html Msg) -> List (Html Msg)
-insertPlayer player room =
-    room
+insertPlayer : Player -> Cell -> Cell
+insertPlayer player cell =
+    if cell.x == player.x && cell.y == player.y then
+        { cell | cellType = "PLAYER" }
+    else
+        cell
 
 
 
