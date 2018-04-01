@@ -116,7 +116,7 @@ cellDecoder =
     decode Cell
         |> required "x" int
         |> required "y" int
-        |> required "type" (andThen cellTDecoder string)
+        |> required "type" (string |> andThen cellTDecoder)
 
 
 cellTDecoder : String -> Decoder CellT
@@ -148,11 +148,10 @@ view model =
     case model.err of
         None ->
             let
-                roomWithPlayer =
+                room =
                     List.map viewCell model.data.room
-                        |> intersperseEvery model.data.roomSize (br [] [])
             in
-                code [] roomWithPlayer
+                code [] (intersperseEvery model.data.roomSize (br [] []) room)
 
         FetchFail ->
             text "failed to fetch from server"
