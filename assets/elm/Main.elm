@@ -1,6 +1,7 @@
 module Main exposing (..)
 
 import Html exposing (..)
+import Html.Attributes as Attributes
 import Http
 import Json.Decode exposing (..)
 import Json.Decode.Pipeline exposing (decode, required)
@@ -28,7 +29,7 @@ type alias Model =
 type alias GameData =
     { room : List Cell
     , roomSize : Int
-    , player : Player
+    , player : PlayerLocation
     }
 
 
@@ -43,11 +44,18 @@ type alias Y =
 type alias Cell =
     { x : X
     , y : Y
-    , cellType : String
+    , cellType : CellT
     }
 
 
-type alias Player =
+type CellT
+    = Floor
+    | Wall
+    | Player
+    | Unknown String
+
+
+type alias PlayerLocation =
     { x : Int
     , y : Int
     }
@@ -108,12 +116,25 @@ cellDecoder =
     decode Cell
         |> required "x" int
         |> required "y" int
-        |> required "type" string
+        |> required "type" (andThen cellTDecoder string)
 
 
-playerDecoder : Decoder Player
+cellTDecoder : String -> Decoder CellT
+cellTDecoder str =
+    case str of
+        "FLOOR" ->
+            succeed Floor
+
+        "WALL" ->
+            succeed Wall
+
+        n ->
+            succeed (Unknown n)
+
+
+playerDecoder : Decoder PlayerLocation
 playerDecoder =
-    decode Player
+    decode PlayerLocation
         |> required "x" int
         |> required "y" int
 
@@ -152,23 +173,23 @@ intersperseEvery count elem list =
 viewCell : Cell -> Html Msg
 viewCell cell =
     case cell.cellType of
-        "FLOOR" ->
+        Floor ->
             text "."
 
-        "WALL" ->
+        Wall ->
             text "#"
 
-        "PLAYER" ->
+        Player ->
             text "@"
 
-        _ ->
-            text "!"
+        Unknown str ->
+            span [ Attributes.title str ] [ text "!" ]
 
 
-insertPlayer : Player -> Cell -> Cell
+insertPlayer : PlayerLocation -> Cell -> Cell
 insertPlayer player cell =
     if cell.x == player.x && cell.y == player.y then
-        { cell | cellType = "PLAYER" }
+        { cell | cellType = Player }
     else
         cell
 
@@ -188,7 +209,7 @@ subscriptions model =
 
 init : ( Model, Cmd Msg )
 init =
-    ( (Model (GameData [] 0 (Player 0 0)) None), getServerState )
+    ( (Model (GameData [] 0 (PlayerLocation 0 0)) None), getServerState )
 
 
 main : Program Never Model Msg
