@@ -6,6 +6,7 @@ import Http
 import Json.Decode exposing (..)
 import Json.Decode.Pipeline exposing (decode, required)
 import List.Extra
+import Keyboard.Extra exposing (Key)
 
 
 -- MSG
@@ -14,6 +15,7 @@ import List.Extra
 type Msg
     = GetState
     | NewState (Result Http.Error GameData)
+    | KeyPress Keyboard.Extra.Msg
 
 
 
@@ -23,6 +25,7 @@ type Msg
 type alias Model =
     { data : GameData
     , err : Error
+    , key : List Key
     }
 
 
@@ -90,6 +93,27 @@ update msg model =
         NewState (Err _) ->
             ( { model | err = FetchFail }, Cmd.none )
 
+        KeyPress k ->
+            let
+                keys =
+                    Keyboard.Extra.update k model.key
+
+                pressed =
+                    case List.head keys of
+                        Nothing ->
+                            -- value doesn't matter, not actually used
+                            Keyboard.Extra.Cancel
+
+                        Just key ->
+                            key
+
+                action =
+                    case pressed of
+                        _ ->
+                            Cmd.none
+            in
+                ( { model | key = keys }, action )
+
 
 getServerState : Cmd Msg
 getServerState =
@@ -116,7 +140,7 @@ cellDecoder =
     decode Cell
         |> required "x" int
         |> required "y" int
-        |> required "type" (andThen cellTDecoder string)
+        |> required "type" (string |> andThen cellTDecoder)
 
 
 cellTDecoder : String -> Decoder CellT
@@ -148,11 +172,10 @@ view model =
     case model.err of
         None ->
             let
-                roomWithPlayer =
+                room =
                     List.map viewCell model.data.room
-                        |> intersperseEvery model.data.roomSize (br [] [])
             in
-                code [] roomWithPlayer
+                code [] (intersperseEvery model.data.roomSize (br [] []) room)
 
         FetchFail ->
             text "failed to fetch from server"
@@ -209,7 +232,7 @@ subscriptions model =
 
 init : ( Model, Cmd Msg )
 init =
-    ( (Model (GameData [] 0 (PlayerLocation 0 0)) None), getServerState )
+    ( (Model (GameData [] 0 (PlayerLocation 0 0)) None []), getServerState )
 
 
 main : Program Never Model Msg
