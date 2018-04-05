@@ -13,5 +13,7 @@ defmodule SubroutineWeb.Router do
     pipe_through(:api)
 
     get("/", DungeonController, :index)
+
+    post("/users", UserController, :create)
   end
 end
