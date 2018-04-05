@@ -17,6 +17,11 @@ config :subroutine, SubroutineWeb.Endpoint,
   pubsub: [name: Subroutine.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
+# Configures authentication using Guardian
+config :subroutine, SubroutineWeb.Guardian,
+  issuer: "subroutine",
+  secret_key: "trh5ZDdk99B8P1JQPKB/8M7MAbYOetVJDf1QM5sZN/yttpAwNDTpTfp80YocN6+y"
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
