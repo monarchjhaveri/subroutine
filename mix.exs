@@ -40,6 +40,8 @@ defmodule Subroutine.Mixfile do
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
       {:guardian, "~> 1.0"},
+      {:comeonin, "~> 4.0"},
+      {:bcrypt_elixir, "~> 1.0"},
       {:credo, "~> 0.9.0-rc1", only: [:dev, :test], runtime: false}
     ]
   end
