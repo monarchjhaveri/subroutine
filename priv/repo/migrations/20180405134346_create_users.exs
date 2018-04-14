@@ -11,6 +11,6 @@ defmodule Subroutine.Repo.Migrations.CreateUsers do
 
       timestamps()
     end
-
+    create unique_index(:users, [:username])
   end
 end
