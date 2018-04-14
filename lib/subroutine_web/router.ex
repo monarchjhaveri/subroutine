@@ -14,6 +14,6 @@ defmodule SubroutineWeb.Router do
 
     get("/", DungeonController, :index)
 
-    post("/users", UserController, :create)
+    resources "/users", UserController, except: [:new, :edit, :index]
   end
 end
