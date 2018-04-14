@@ -1,5 +1,5 @@
-defmodule MyApp.Guardian do
-  use Guardian, otp_app: :my_app
+defmodule SubroutineWeb.Auth.Guardian do
+  use Guardian, otp_app: :subroutine
 
   def subject_for_token(resource, _claims) do
     # You can use any value for the subject of your token but
@@ -19,7 +19,7 @@ defmodule MyApp.Guardian do
     # found in the `"sub"` key. In `above subject_for_token/2` we returned
     # the resource id so here we'll rely on that to look it up.
     id = claims["sub"]
-    resource = MyApp.get_resource_by_id(id)
+    resource = Subroutine.Accounts.get_user!(id)
     {:ok,  resource}
   end
   def resource_from_claims(_claims) do
