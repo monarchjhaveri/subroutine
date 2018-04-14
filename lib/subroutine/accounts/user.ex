@@ -19,7 +19,7 @@ defmodule Subroutine.Accounts.User do
     |> validate_required([:username, :password_hash])
   end
 
-  def registration_changeset(%User{} = user, attrs) do
+  def registration_changeset(user, attrs) do
     user
     |> cast(attrs, [:username, :password])
     |> validate_required([:username, :password])
