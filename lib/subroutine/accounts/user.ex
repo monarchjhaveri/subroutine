@@ -5,6 +5,7 @@ defmodule Subroutine.Accounts.User do
 
   schema "users" do
     field :password_hash, :string
+    field :password, :string, virtual: true
     field :username, :string
     field :seed, :string
     field :moves, {:array, :string}
@@ -27,7 +28,6 @@ defmodule Subroutine.Accounts.User do
     |> validate_length(:password, min: 8)
     |> unique_constraint(:username)
     |> put_password_hash()
-    |> Map.delete(:password)
   end
 
   defp put_password_hash(changeset) do
