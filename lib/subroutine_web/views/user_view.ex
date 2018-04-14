@@ -12,7 +12,6 @@ defmodule SubroutineWeb.UserView do
 
   def render("user.json", %{user: user}) do
     %{id: user.id,
-      username: user.username,
-      password_hash: user.password_hash}
+      username: user.username}
   end
 end
