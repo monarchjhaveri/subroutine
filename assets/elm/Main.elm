@@ -1,10 +1,12 @@
 module Main exposing (..)
 
 import Html exposing (..)
+import Html.Attributes as Attributes
 import Http
 import Json.Decode exposing (..)
 import Json.Decode.Pipeline exposing (decode, required)
 import List.Extra
+import Keyboard.Extra exposing (Key)
 
 
 -- MSG
@@ -13,6 +15,7 @@ import List.Extra
 type Msg
     = GetState
     | NewState (Result Http.Error GameData)
+    | KeyPress Keyboard.Extra.Msg
 
 
 
@@ -22,13 +25,14 @@ type Msg
 type alias Model =
     { data : GameData
     , err : Error
+    , key : List Key
     }
 
 
 type alias GameData =
     { room : List Cell
     , roomSize : Int
-    , player : Player
+    , player : PlayerLocation
     }
 
 
@@ -43,11 +47,18 @@ type alias Y =
 type alias Cell =
     { x : X
     , y : Y
-    , cellType : String
+    , cellType : CellT
     }
 
 
-type alias Player =
+type CellT
+    = Floor
+    | Wall
+    | Player
+    | Unknown String
+
+
+type alias PlayerLocation =
     { x : Int
     , y : Int
     }
@@ -69,10 +80,39 @@ update msg model =
             ( model, getServerState )
 
         NewState (Ok data) ->
-            ( { model | data = { data | roomSize = data.roomSize + 1 } }, Cmd.none )
+            ( { model
+                | data =
+                    { data
+                        | roomSize = data.roomSize + 1
+                        , room = List.map (insertPlayer data.player) data.room
+                    }
+              }
+            , Cmd.none
+            )
 
         NewState (Err _) ->
             ( { model | err = FetchFail }, Cmd.none )
+
+        KeyPress k ->
+            let
+                keys =
+                    Keyboard.Extra.update k model.key
+
+                pressed =
+                    case List.head keys of
+                        Nothing ->
+                            -- value doesn't matter, not actually used
+                            Keyboard.Extra.Cancel
+
+                        Just key ->
+                            key
+
+                action =
+                    case pressed of
+                        _ ->
+                            Cmd.none
+            in
+                ( { model | key = keys }, action )
 
 
 getServerState : Cmd Msg
@@ -100,12 +140,25 @@ cellDecoder =
     decode Cell
         |> required "x" int
         |> required "y" int
-        |> required "type" string
+        |> required "type" (string |> andThen cellTDecoder)
 
 
-playerDecoder : Decoder Player
+cellTDecoder : String -> Decoder CellT
+cellTDecoder str =
+    case str of
+        "FLOOR" ->
+            succeed Floor
+
+        "WALL" ->
+            succeed Wall
+
+        n ->
+            succeed (Unknown n)
+
+
+playerDecoder : Decoder PlayerLocation
 playerDecoder =
-    decode Player
+    decode PlayerLocation
         |> required "x" int
         |> required "y" int
 
@@ -119,12 +172,10 @@ view model =
     case model.err of
         None ->
             let
-                roomWithPlayer =
+                room =
                     List.map viewCell model.data.room
-                        |> insertPlayer model.data.player
-                        |> intersperseEvery model.data.roomSize (br [] [])
             in
-                code [] roomWithPlayer
+                code [] (intersperseEvery model.data.roomSize (br [] []) room)
 
         FetchFail ->
             text "failed to fetch from server"
@@ -145,19 +196,25 @@ intersperseEvery count elem list =
 viewCell : Cell -> Html Msg
 viewCell cell =
     case cell.cellType of
-        "FLOOR" ->
+        Floor ->
             text "."
 
-        "WALL" ->
+        Wall ->
             text "#"
 
-        _ ->
-            text "!"
+        Player ->
+            text "@"
+
+        Unknown str ->
+            span [ Attributes.title str ] [ text "!" ]
 
 
-insertPlayer : Player -> List (Html Msg) -> List (Html Msg)
-insertPlayer player room =
-    room
+insertPlayer : PlayerLocation -> Cell -> Cell
+insertPlayer player cell =
+    if cell.x == player.x && cell.y == player.y then
+        { cell | cellType = Player }
+    else
+        cell
 
 
 
@@ -175,7 +232,7 @@ subscriptions model =
 
 init : ( Model, Cmd Msg )
 init =
-    ( (Model (GameData [] 0 (Player 0 0)) None), getServerState )
+    ( (Model (GameData [] 0 (PlayerLocation 0 0)) None []), getServerState )
 
 
 main : Program Never Model Msg

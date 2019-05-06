@@ -13,5 +13,7 @@ defmodule SubroutineWeb.Router do
     pipe_through(:api)
 
     get("/", DungeonController, :index)
+
+    resources "/users", UserController, except: [:new, :edit, :index]
   end
 end
